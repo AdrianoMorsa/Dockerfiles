@@ -1,0 +1,91 @@
+FROM golang AS buildando 
+
+  
+
+WORKDIR /app 
+
+ADD . /app 
+
+RUN go build -o meugo 
+
+  
+
+FROM alpine 
+
+WORKDIR /giropops 
+
+COPY --from=buildando /app/meugo /giropops/ 
+
+ENTRYPOINT ./meugo 
+
+ 
+
+docker image build -t meugo:2.0 . 
+
+docker container run –ti  meugo:2.0 
+
+ HEALTHCHECKING 
+
+ 
+
+FROM debian  
+
+RUN apt-get update && apt-get install -y apache2 curl 
+
+RUN chown www-data:www-data /var/lock && chown www-data:www-data /var/run/ && chown www-data:www-data /var/log/ 
+
+ENV APACHE_LOCK_DIR="/var/lock" 
+
+ENV APACHE_PID_FILE="/var/run/apache2.pid" 
+
+ENV APACHE_RUN_USER="www-data" 
+
+ENV APACHE_RUN_GROUP="www-data" 
+
+ENV APACHE_LOG_DIR="/var/log/apache2" 
+
+  
+
+ADD index.html /var/www/html/ 
+
+HEALTHCHECK --interval=1m --timeout=3s \ 
+
+CMD curl -f http://localhost/ || exit 1 
+
+  
+
+LABEL description="Webserver" 
+
+LABEL version="1.0.0" 
+
+  
+
+USER root 
+
+  
+
+WORKDIR /var/www/html/ 
+
+  
+
+VOLUME /var/www/html/ 
+
+EXPOSE 80 
+
+  
+
+ENTRYPOINT ["/usr/sbin/apachectl"] 
+
+CMD ["-D", "FOREGROUND"] 
+
+ 
+
+Docker Commit 
+
+docker commit -m "ubuntu com vim e curl" b93c19afb22c 
+
+ 
+
+Tagueando 
+
+docker image tag 3b1966b09ead ubuntu_vim_curl:1.0 
