@@ -1,0 +1,35 @@
+Dockerfile – MultiStage 
+
+vim meu_go.go 
+
+package main 
+
+import  "fmt" 
+
+  
+
+func main(){ 
+
+        fmt.Println("Giropops Strigus Girus") 
+
+  
+
+} 
+
+Dockerfile 
+
+ 
+
+FROM golang  
+
+WORKDIR /app 
+
+ADD . /app 
+
+RUN go build -o meugo 
+
+ENTRYPOINT ./meugo 
+
+docker image build –t meugo:1.0 . 
+
+docker container run -ti meugo:1.0 
